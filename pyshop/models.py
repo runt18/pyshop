@@ -51,7 +51,7 @@ def _whlify(filename):
     elif filename.endswith('.zip'):
         pkg = filename[:-4]
     else:
-        raise NotImplementedError('filename %s not supported' % filename)
+        raise NotImplementedError('filename {0!s} not supported'.format(filename))
 
     return u'{pkg}-py{pyvermax}{pyvermin}-none-{platform}'\
             '.whl'.format(pkg=pkg,
@@ -137,7 +137,7 @@ class User(Base):
 
     @declared_attr
     def __table_args__(cls):
-        return (Index('idx_%s_login_local' % cls.__tablename__,
+        return (Index('idx_{0!s}_login_local'.format(cls.__tablename__),
                       'login', 'local', unique=True),
                 {'mysql_engine': 'InnoDB',
                  'mysql_charset': 'utf8',
@@ -157,7 +157,7 @@ class User(Base):
 
     @property
     def name(self):
-        return u'%s %s' % (self.firstname, self.lastname)\
+        return u'{0!s} {1!s}'.format(self.firstname, self.lastname)\
             if self.firstname and self.lastname else self.login
 
     def _get_password(self):
@@ -265,7 +265,7 @@ class User(Base):
                 certreq = settings.get('pyshop.ldap.certreq', 'DEMAND').strip()
                 if certreq not in ['DEMAND', 'ALLOW', 'HARD', 'TRY', 'NEVER']:
                     certreq = 'DEMAND'
-                tls_cert = getattr(ldap, 'OPT_X_TLS_%s' % certreq)
+                tls_cert = getattr(ldap, 'OPT_X_TLS_{0!s}'.format(certreq))
                 ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, tls_cert)
             else:
                 port =  port or 389
@@ -284,16 +284,16 @@ class User(Base):
 
             filter_ = settings['pyshop.ldap.search_filter'].format(username=login)
             results = server.search_ext_s(settings['pyshop.ldap.bind_dn'],
-                                          getattr(ldap,"SCOPE_%s"%settings['pyshop.ldap.search_scope']),
+                                          getattr(ldap,"SCOPE_{0!s}".format(settings['pyshop.ldap.search_scope'])),
                                           filter_)
             if results is None:
-                log.debug("LDAP rejected password for user %s" % (login))
+                log.debug("LDAP rejected password for user {0!s}".format((login)))
                 return None
 
             for (dn, _attrs) in results:
                 if dn is None:
                     continue
-                log.debug('Trying simple bind with %s' % dn)
+                log.debug('Trying simple bind with {0!s}'.format(dn))
                 server.simple_bind_s(dn, password)
                 attrs = server.search_ext_s(dn, ldap.SCOPE_BASE, '(objectClass=*)')[0][1]
                 break
@@ -305,7 +305,7 @@ class User(Base):
             # we may create a new user if it don't exist
             user_ldap = User.by_login(session, login)
             if user_ldap is None:
-                log.debug('create user %s'%login)
+                log.debug('create user {0!s}'.format(login))
                 user_ldap = User()
                 user_ldap.login = login
                 user_ldap.password = password
@@ -322,13 +322,13 @@ class User(Base):
             # its OK
             return user_ldap
         except ldap.NO_SUCH_OBJECT:
-            log.debug("LDAP says no such user '%s'" % (login))
+            log.debug("LDAP says no such user '{0!s}'".format((login)))
         except ldap.SERVER_DOWN:
             log.error("LDAP can't access authentication server")
         except ldap.LDAPError:
             log.error('ERROR while using LDAP connection')
         except Exception as exc:
-            log.error('Unmanaged exception %s' % exc, exc_info=True)
+            log.error('Unmanaged exception {0!s}'.format(exc), exc_info=True)
         return None
 
     @classmethod
@@ -369,13 +369,13 @@ class User(Base):
         else:
             other = User.by_login(session, self.login)
             if other and other.id != self.id:
-                errors.append(u'duplicate login %s' % self.login)
+                errors.append(u'duplicate login {0!s}'.format(self.login))
         if not self.password:
             errors.append(u'password is required')
         if not self.email:
             errors.append(u'email is required')
         elif not re_email.match(self.email):
-            errors.append(u'%s is not a valid email' % self.email)
+            errors.append(u'{0!s} is not a valid email'.format(self.email))
 
         if len(errors):
             raise ModelError(errors)
@@ -389,7 +389,7 @@ class Classifier(Base):
 
     @declared_attr
     def __table_args__(cls):
-        return (Index('idx_%s_category_name' % cls.__tablename__,
+        return (Index('idx_{0!s}_category_name'.format(cls.__tablename__),
                       'category', 'name', unique=True),
                 {'mysql_engine': 'InnoDB',
                  'mysql_charset': 'utf8',
@@ -645,7 +645,7 @@ class Release(Base):
 
     @declared_attr
     def __table_args__(cls):
-        return (Index('idx_%s_package_id_version' % cls.__tablename__,
+        return (Index('idx_{0!s}_package_id_version'.format(cls.__tablename__),
                       'package_id', 'version', unique=True),
                 {'mysql_engine': 'InnoDB',
                  'mysql_charset': 'utf8',
@@ -780,9 +780,9 @@ class Release(Base):
         for opt, val in opts.items():
             field = available[opt]
             if hasattr(val, '__iter__') and len(val) > 1:
-                stmt = or_(*[field.like(u'%%%s%%' % v) for v in val])
+                stmt = or_(*[field.like(u'%{0!s}%'.format(v)) for v in val])
             else:
-                stmt = field.like(u'%%%s%%' % val)
+                stmt = field.like(u'%{0!s}%'.format(val))
             where.append(stmt)
             if opt in join_map:
                 join.append(join_map[opt])

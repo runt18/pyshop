@@ -58,9 +58,9 @@ class UploadReleaseFile(View):
             raise exc.HTTPBadRequest()
 
         if params['filetype'] == 'sdist':
-            filename = u'%s-%s.%s' % (params['name'], params['version'], ext)
+            filename = u'{0!s}-{1!s}.{2!s}'.format(params['name'], params['version'], ext)
         else:
-            filename = u'%s-%s-py%s-%s.%s' % (params['name'],
+            filename = u'{0!s}-{1!s}-py{2!s}-{3!s}.{4!s}'.format(params['name'],
                                               params['version'],
                                               params['pyversion'],
                                               params['platform'].lower(),
@@ -108,8 +108,7 @@ class UploadReleaseFile(View):
 
         filepath = os.path.join(dir_, filename)
         while os.path.exists(filepath):
-            log.warning('File %s exists but new upload self.request, deleting'
-                        % filepath)
+            log.warning('File {0!s} exists but new upload self.request, deleting'.format(filepath))
             os.unlink(filepath)
 
         size = 0
@@ -328,7 +327,7 @@ class Show(View):
 
         if not pkg:
             if not pypi_versions:
-                log.info('package %s has no versions' % package_name)
+                log.info('package {0!s} has no versions'.format(package_name))
                 return {'package': None,
                         'package_name': package_name}
 
@@ -339,7 +338,7 @@ class Show(View):
                                  if re_sanitize.match(v)]
 
             # mirror the package now
-            log.info('mirror package %s now' % package_name)
+            log.info('mirror package {0!s} now'.format(package_name))
             pkg = Package.by_name(self.session, package_name)
             if not pkg:
                 pkg = Package(name=package_name, local=False)
@@ -368,7 +367,7 @@ class Show(View):
 
         self.session.flush()
         if not pkg.local and refresh:
-            log.debug('refreshing %s package' % package_name)
+            log.debug('refreshing {0!s} package'.format(package_name))
             pkg_versions = set(pypi_versions).difference(pkg.versions)
             if not pkg_versions:
                 log.info('No new version to mirror')
@@ -391,6 +390,6 @@ class Show(View):
 
             pkg.update_at = func.now()
             self.session.add(pkg)
-            log.info('package %s mirrored' % package_name)
+            log.info('package {0!s} mirrored'.format(package_name))
         return {'package': pkg,
                 'whlify': asbool(settings.get('pyshop.mirror.wheelify', '0'))}

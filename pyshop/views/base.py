@@ -48,7 +48,7 @@ class ViewBase(object):
             self.session.flush()
         except Exception as exc:
             if self.on_error(exc):
-                log.error('Error on view %s' % self.__class__.__name__,
+                log.error('Error on view {0!s}'.format(self.__class__.__name__),
                           exc_info=True)
                 raise
         return response
@@ -127,15 +127,15 @@ class CreateView(RedirectView):
         return len(errors) == 0
 
     def save_model(self, model):
-        log.debug('saving %s' % model.__class__.__name__)
-        log.debug('%r' % model.__dict__)
+        log.debug('saving {0!s}'.format(model.__class__.__name__))
+        log.debug('{0!r}'.format(model.__dict__))
         self.session.add(model)
 
     def render(self):
         if 'form.cancelled' in self.request.params:
             return self.redirect()
 
-        log.debug('rendering %s' % self.__class__.__name__)
+        log.debug('rendering {0!s}'.format(self.__class__.__name__))
         errors = []
         model = self.get_model()
 

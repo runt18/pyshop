@@ -21,7 +21,7 @@ def main(argv=sys.argv):
     version = argv[2]
     version = version.replace('.', '_')
     try:
-        migration = import_module('pyshop.bin.migration.migr_%s' % version)
+        migration = import_module('pyshop.bin.migration.migr_{0!s}'.format(version))
     except ImportError:
         print('No migration script for that version found')
         sys.exit()
