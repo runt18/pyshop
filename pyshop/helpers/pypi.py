@@ -82,7 +82,7 @@ class RequestsTransport(xmlrpc.Transport):
         property
         """
         scheme = 'https' if self.use_https else 'http'
-        return '%s://%s%s' % (scheme, host, handler)
+        return '{0!s}://{1!s}{2!s}'.format(scheme, host, handler)
 
 
 

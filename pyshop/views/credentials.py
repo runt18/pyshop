@@ -36,13 +36,13 @@ class Login(View):
             if password:
                 if User.by_ldap_credentials(self.session, login, password,
                                             self.request.registry.settings) is not None:
-                    log.info('login %r succeed' % login)
+                    log.info('login {0!r} succeed'.format(login))
                     headers = remember(self.request, login)
                     return HTTPFound(location=came_from,
                                      headers=headers)
  
                 if User.by_credentials(self.session, login, password) is not None:
-                    log.info('login %r succeed' % login)
+                    log.info('login {0!r} succeed'.format(login))
                     headers = remember(self.request, login)
                     return HTTPFound(location=came_from,
                                      headers=headers)

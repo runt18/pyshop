@@ -70,7 +70,7 @@ class RootFactory(object):
         except ValueError as e:
             cru = str(e)
 
-        log.info(u'[%s] %s %s' % (ca, rm, cru))
+        log.info(u'[{0!s}] {1!s} {2!s}'.format(ca, rm, cru))
         self.__acl__ = self.get_acl(request)
 
     def get_acl(self, request):
