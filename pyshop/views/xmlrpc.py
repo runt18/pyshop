@@ -165,7 +165,7 @@ class PyPI(XMLRPCView):
                            'maintainer_email': release.maintainer.email,
                            })
 
-        return dict([(key, val or '') for key, val in result.items()])
+        return {key: val or '' for key, val in result.items()}
 
     def search(self, spec, operator='and'):
         """
