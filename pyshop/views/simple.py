@@ -171,9 +171,9 @@ class Show(View):
 
     def _to_unicode(self, data):
         # xmlrpc use utf8 encoded string
-        return dict([(key, val.decode('utf-8')
-                      if isinstance(val, str) else val)
-                     for key, val in data.items()])
+        return {key: val.decode('utf-8')
+                      if isinstance(val, str) else val
+                     for key, val in data.items()}
 
     def _create_release(self, package, data, session_users):
         log.info('Create release {0} for package {1}'.format(
